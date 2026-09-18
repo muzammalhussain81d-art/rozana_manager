@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rozana Manager</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--text:#18212f;--muted:#687386;--primary:#315efb;--danger:#e5484d;--border:#e4e8f0;--shadow:0 8px 24px rgba(20,35,60,.07)}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text)}
+.app{display:grid;grid-template-columns:250px 1fr;min-height:100vh;direction:ltr}.sidebar{background:#101828;color:white;padding:22px 16px;position:sticky;top:0;height:100vh;direction:rtl}.brand{font-size:24px;font-weight:800;padding:8px 10px 25px}.brand span{color:#7d9bff}.nav button{width:100%;background:none;border:0;color:#b9c3d4;padding:13px 12px;border-radius:10px;text-align:right;font-size:15px;cursor:pointer;margin:3px 0}.nav button:hover,.nav button.active{background:#24324a;color:white}.main{direction:rtl;padding:26px;max-width:1400px;width:100%;margin:auto}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:22px}.top h1{margin:0 0 5px;font-size:28px}.date{color:var(--muted)}.clock{font-weight:700;background:var(--card);border:1px solid var(--border);padding:11px 16px;border-radius:12px;box-shadow:var(--shadow)}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px}.stat{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:18px;box-shadow:var(--shadow)}.stat b{font-size:27px;display:block;margin-top:8px}.stat small{color:var(--muted)}
+.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}.card{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:18px;box-shadow:var(--shadow);margin-bottom:18px}.card h2{font-size:18px;margin:0 0 15px}.row{display:flex;gap:9px}.row>*{flex:1}input,select,textarea{width:100%;border:1px solid var(--border);border-radius:10px;padding:11px 12px;font:inherit;background:white}textarea{min-height:90px;resize:vertical}button.primary{background:var(--primary);color:white;border:0;border-radius:10px;padding:11px 16px;cursor:pointer;font-weight:700}button.secondary{background:#eef2ff;color:#294bd1;border:0;border-radius:10px;padding:10px 13px;cursor:pointer}.task{display:flex;align-items:center;gap:10px;border:1px solid var(--border);padding:12px;border-radius:11px;margin:9px 0}.task.done .tasktext{text-decoration:line-through;color:#8a94a6}.tasktext{flex:1}.tag{font-size:12px;padding:4px 8px;border-radius:999px;background:#edf1f7;color:#58657a}.delete{border:0;background:none;color:var(--danger);cursor:pointer;font-size:18px}.note{border:1px solid var(--border);border-radius:11px;padding:12px;margin:9px 0}.note strong{display:block;margin-bottom:4px}.muted{color:var(--muted)}.empty{text-align:center;color:var(--muted);padding:20px}.page{display:none}.page.active{display:block}.money{font-size:22px;font-weight:800}.expense{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}.expense:last-child{border-bottom:0}.danger{color:var(--danger)}.success{color:#16834b}@media(max-width:900px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}.nav{display:flex;overflow:auto}.nav button{min-width:120px}.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}@media(max-width:560px){.main{padding:15px}.top{align-items:flex-start}.clock{display:none}.cards{grid-template-columns:1fr 1fr}.row{flex-direction:column}}
+
+.nav{display:flex;flex-direction:column}
+@media(max-width:900px){.nav{flex-direction:row}.nav button{min-width:115px}.cards{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.row{flex-direction:column}.cards{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">Rozana<span>Manager</span></div>
+  <div class="nav">
+    <button class="active" onclick="showPage('dashboard',this)">🏠 ڈیش بورڈ</button>
+    <button onclick="showPage('tasks',this)">✅ کام</button>
+    <button onclick="showPage('notes',this)">📝 نوٹس</button>
+    <button onclick="showPage('expenses',this)">💰 اخراجات</button>
+    <button onclick="showPage('schedule',this)">📅 شیڈول</button>
+    <button onclick="showPage('income',this)">💵 آمدن</button>
+    <button onclick="showPage('budget',this)">🎯 بجٹ</button>
+    <button onclick="showPage('prayer',this)">🕌 نماز</button>
+    <button onclick="showPage('account',this)">🔐 اکاؤنٹ</button>
+  </div>
+</aside>
+<main class="main">
+  <section id="dashboard" class="page active">
+    <div class="top"><div><h1>السلام علیکم 👋</h1><div class="date" id="today"></div></div><div class="clock" id="clock"></div></div>
+    <div class="cards">
+      <div class="stat"><small>آج کے کام</small><b id="statTasks">0</b></div>
+      <div class="stat"><small>مکمل کام</small><b id="statDone">0</b></div>
+      <div class="stat"><small>اس ماہ کے اخراجات</small><b id="statExpense">Rs 0</b></div>
+      <div class="stat"><small>نوٹس</small><b id="statNotes">0</b></div>
+      <div class="stat"><small>آمدن</small><b id="statIncome">Rs 0</b></div>
+    </div>
+    <div class="grid">
+      <div class="card"><h2>آج کے اہم کام</h2><div id="dashTasks"></div></div>
+      <div class="card"><h2>فوری نوٹ</h2><textarea id="quickNote" placeholder="کوئی اہم بات لکھیں..."></textarea><br><br><button class="primary" onclick="saveQuickNote()">نوٹ محفوظ کریں</button></div>
+    </div>
+  </section>
+
+  <section id="tasks" class="page">
+    <div class="card"><h2>نیا کام شامل کریں</h2>
+      <div class="row"><input id="taskInput" placeholder="مثلاً: بجلی کا بل جمع کرنا"><select id="priority"><option value="اہم">اہم</option><option value="درمیانہ">درمیانہ</option><option value="کم">کم</option></select><button class="primary" onclick="addTask()">شامل کریں</button></div>
+    </div>
+    <div class="card"><h2>میرے کام</h2><div id="taskList"></div></div>
+  </section>
+
+  <section id="notes" class="page">
+    <div class="card"><h2>نیا نوٹ</h2><input id="noteTitle" placeholder="عنوان"><br><br><textarea id="noteBody" placeholder="تفصیل لکھیں..."></textarea><br><br><button class="primary" onclick="addNote()">نوٹ محفوظ کریں</button></div>
+    <div class="card"><h2>محفوظ نوٹس</h2><div id="noteList"></div></div>
+  </section>
+
+  <section id="expenses" class="page">
+    <div class="card"><h2>نیا خرچ</h2><div class="row"><input id="expenseTitle" placeholder="مثلاً: پٹرول"><input id="expenseAmount" type="number" placeholder="رقم"><select id="expenseCategory"><option>گھر</option><option>سفر</option><option>کھانا</option><option>بل</option><option>دیگر</option></select><button class="primary" onclick="addExpense()">شامل کریں</button></div></div>
+    <div class="card"><h2>اخراجات کا خلاصہ</h2><div class="money" id="totalExpense">Rs 0</div><div id="expenseList"></div></div>
+  </section>
+
+  <section id="schedule" class="page">
+    <div class="card"><h2>📅 Daily Schedule</h2>
+      <div class="row"><input id="scheduleTitle" placeholder="کام/ملاقات کا نام"><input id="scheduleTime" type="time"><input id="scheduleDate" type="date"><button class="primary" onclick="addSchedule()">شامل کریں</button></div>
+    </div>
+    <div class="card"><h2>آج کا شیڈول</h2><div id="scheduleList"></div></div>
+  </section>
+
+  <section id="income" class="page">
+    <div class="card"><h2>💵 آمدن شامل کریں</h2>
+      <div class="row"><input id="incomeTitle" placeholder="مثلاً: Freelancing"><input id="incomeAmount" type="number" placeholder="رقم"><button class="primary" onclick="addIncome()">شامل کریں</button></div>
+    </div>
+    <div class="card"><h2>آمدن کا ریکارڈ</h2><div class="money" id="totalIncome">Rs 0</div><div id="incomeList"></div></div>
+  </section>
+
+  <section id="budget" class="page">
+    <div class="card"><h2>🎯 ماہانہ بجٹ</h2>
+      <div class="row"><input id="budgetAmount" type="number" placeholder="ماہانہ بجٹ"><button class="primary" onclick="saveBudget()">بجٹ محفوظ کریں</button></div>
+      <p class="muted">خرچ: <b id="budgetSpent">Rs 0</b> — باقی: <b id="budgetRemaining">Rs 0</b></p>
+    </div>
+    <div class="card"><h2>بجٹ کی پیش رفت</h2><div style="background:#edf1f7;border-radius:999px;height:18px;overflow:hidden"><div id="budgetBar" style="height:100%;width:0%;background:#315efb"></div></div></div>
+  </section>
+
+  <section id="prayer" class="page">
+    <div class="card"><h2>🕌 نماز کے اوقات</h2>
+      <p class="muted">اپنے شہر کے اوقات یہاں درج کریں۔ یہ اوقات آپ کے browser میں محفوظ رہیں گے۔</p>
+      <div class="row"><input id="prayerCity" placeholder="شہر"><input id="fajr" type="time" title="فجر"><input id="dhuhr" type="time" title="ظہر"><input id="asr" type="time" title="عصر"><input id="maghrib" type="time" title="مغرب"><input id="isha" type="time" title="عشاء"><button class="primary" onclick="savePrayer()">محفوظ کریں</button></div>
+    </div>
+    <div class="card"><h2 id="prayerHeading">آج کے نماز کے اوقات</h2><div id="prayerList"></div></div>
+  </section>
+
+  <section id="account" class="page">
+    <div class="card"><h2>🔐 Local Login</h2>
+      <p class="muted">یہ demo login اسی browser پر مقامی طور پر کام کرتا ہے؛ اسے حقیقی online security نہ سمجھیں۔</p>
+      <div class="row"><input id="loginName" placeholder="نام"><input id="loginPin" type="password" placeholder="4 ہندسوں کا PIN" maxlength="4"><button class="primary" onclick="saveAccount()">محفوظ کریں</button></div>
+      <p id="accountStatus"></p>
+    </div>
+  </section>
+
+</main>
+</div>
+<script>
+const get=(k,d=[])=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d));
+const set=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+let tasks=get('rm_tasks'), notes=get('rm_notes'), expenses=get('rm_expenses');
+let schedules=get('rm_schedules'), incomes=get('rm_incomes'), budget=get('rm_budget',0), prayer=get('rm_prayer',{}), account=get('rm_account',{});
+
+function showPage(id,btn){
+ document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));
+ btn.classList.add('active'); render();
+}
+function addTask(){let t=document.getElementById('taskInput').value.trim();if(!t)return;tasks.unshift({id:Date.now(),text:t,priority:document.getElementById('priority').value,done:false});set('rm_tasks',tasks);document.getElementById('taskInput').value='';render()}
+function toggleTask(id){tasks=tasks.map(t=>t.id===id?{...t,done:!t.done}:t);set('rm_tasks',tasks);render()}
+function delTask(id){tasks=tasks.filter(t=>t.id!==id);set('rm_tasks',tasks);render()}
+function addNote(){let title=document.getElementById('noteTitle').value.trim(),body=document.getElementById('noteBody').value.trim();if(!title&&!body)return;notes.unshift({id:Date.now(),title:title||'بغیر عنوان',body,date:new Date().toLocaleDateString('ur-PK')});set('rm_notes',notes);document.getElementById('noteTitle').value='';document.getElementById('noteBody').value='';render()}
+function delNote(id){notes=notes.filter(n=>n.id!==id);set('rm_notes',notes);render()}
+function addExpense(){let title=document.getElementById('expenseTitle').value.trim(),amount=Number(document.getElementById('expenseAmount').value);if(!title||!amount)return;expenses.unshift({id:Date.now(),title,amount,category:document.getElementById('expenseCategory').value,date:new Date().toLocaleDateString('en-GB')});set('rm_expenses',expenses);document.getElementById('expenseTitle').value='';document.getElementById('expenseAmount').value='';render()}
+function delExpense(id){expenses=expenses.filter(e=>e.id!==id);set('rm_expenses',expenses);render()}
+function saveQuickNote(){let v=document.getElementById('quickNote').value.trim();if(!v)return;notes.unshift({id:Date.now(),title:'فوری نوٹ',body:v,date:new Date().toLocaleDateString('ur-PK')});set('rm_notes',notes);document.getElementById('quickNote').value='';render();alert('نوٹ محفوظ ہوگیا')}
+
+function addSchedule(){
+ let title=document.getElementById('scheduleTitle').value.trim(),time=document.getElementById('scheduleTime').value,date=document.getElementById('scheduleDate').value;
+ if(!title||!time||!date)return;
+ schedules.push({id:Date.now(),title,time,date,done:false});set('rm_schedules',schedules);
+ document.getElementById('scheduleTitle').value='';render();
+}
+function toggleSchedule(id){schedules=schedules.map(x=>x.id===id?{...x,done:!x.done}:x);set('rm_schedules',schedules);render()}
+function delSchedule(id){schedules=schedules.filter(x=>x.id!==id);set('rm_schedules',schedules);render()}
+
+function addIncome(){
+ let title=document.getElementById('incomeTitle').value.trim(),amount=Number(document.getElementById('incomeAmount').value);
+ if(!title||!amount)return;
+ incomes.unshift({id:Date.now(),title,amount,date:new Date().toLocaleDateString('en-GB')});set('rm_incomes',incomes);
+ document.getElementById('incomeTitle').value='';document.getElementById('incomeAmount').value='';render();
+}
+function delIncome(id){incomes=incomes.filter(x=>x.id!==id);set('rm_incomes',incomes);render()}
+function saveBudget(){let v=Number(document.getElementById('budgetAmount').value);if(!v)return;budget=v;set('rm_budget',budget);render()}
+
+function savePrayer(){
+ prayer={city:document.getElementById('prayerCity').value.trim(),fajr:document.getElementById('fajr').value,dhuhr:document.getElementById('dhuhr').value,asr:document.getElementById('asr').value,maghrib:document.getElementById('maghrib').value,isha:document.getElementById('isha').value};
+ set('rm_prayer',prayer);render();
+}
+function saveAccount(){
+ let name=document.getElementById('loginName').value.trim(),pin=document.getElementById('loginPin').value.trim();
+ if(!name||!/^\d{4}$/.test(pin)){alert('نام اور 4 ہندسوں کا PIN درج کریں');return}
+ account={name,pin};set('rm_account',account);render();alert('اکاؤنٹ محفوظ ہوگیا');
+}
+
+function render(){
+ document.getElementById('taskList').innerHTML=tasks.length?tasks.map(t=>`<div class="task ${t.done?'done':''}"><input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${t.id})"><span class="tasktext">${esc(t.text)}</span><span class="tag">${esc(t.priority)}</span><button class="delete" onclick="delTask(${t.id})">×</button></div>`).join(''):'<div class="empty">ابھی کوئی کام نہیں</div>';
+ document.getElementById('dashTasks').innerHTML=tasks.slice(0,6).map(t=>`<div class="task ${t.done?'done':''}"><input type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${t.id})"><span class="tasktext">${esc(t.text)}</span><span class="tag">${esc(t.priority)}</span></div>`).join('')||'<div class="empty">آج کے لیے کوئی کام شامل نہیں</div>';
+ document.getElementById('noteList').innerHTML=notes.length?notes.map(n=>`<div class="note"><strong>${esc(n.title)}</strong><div>${esc(n.body)}</div><small class="muted">${esc(n.date)}</small><button class="delete" style="float:left" onclick="delNote(${n.id})">×</button></div>`).join(''):'<div class="empty">ابھی کوئی نوٹ نہیں</div>';
+
+ let total=expenses.reduce((s,e)=>s+e.amount,0);
+ document.getElementById('totalExpense').textContent='Rs '+total.toLocaleString();
+ document.getElementById('statExpense').textContent='Rs '+total.toLocaleString();
+ document.getElementById('expenseList').innerHTML=expenses.map(e=>`<div class="expense"><span>${esc(e.title)} <small class="muted">(${esc(e.category)})</small></span><span>Rs ${e.amount.toLocaleString()} <button class="delete" onclick="delExpense(${e.id})">×</button></span></div>`).join('')||'<div class="empty">ابھی کوئی خرچ نہیں</div>';
+
+ document.getElementById('statTasks').textContent=tasks.length;
+ document.getElementById('statDone').textContent=tasks.filter(t=>t.done).length;
+ document.getElementById('statNotes').textContent=notes.length;
+
+ let inc=incomes.reduce((s,x)=>s+x.amount,0);
+ document.getElementById('statIncome').textContent='Rs '+inc.toLocaleString();
+ document.getElementById('totalIncome').textContent='Rs '+inc.toLocaleString();
+ document.getElementById('incomeList').innerHTML=incomes.map(x=>`<div class="expense"><span>${esc(x.title)} <small class="muted">${esc(x.date)}</small></span><span>Rs ${x.amount.toLocaleString()} <button class="delete" onclick="delIncome(${x.id})">×</button></span></div>`).join('')||'<div class="empty">ابھی کوئی آمدن نہیں</div>';
+
+ let today=new Date().toISOString().slice(0,10);
+ let daySchedules=schedules.filter(x=>x.date===today).sort((a,b)=>a.time.localeCompare(b.time));
+ document.getElementById('scheduleList').innerHTML=daySchedules.map(x=>`<div class="task ${x.done?'done':''}"><input type="checkbox" ${x.done?'checked':''} onchange="toggleSchedule(${x.id})"><span class="tasktext">${esc(x.time)} — ${esc(x.title)}</span><button class="delete" onclick="delSchedule(${x.id})">×</button></div>`).join('')||'<div class="empty">آج کا شیڈول خالی ہے</div>';
+
+ document.getElementById('budgetAmount').value=budget||'';
+ document.getElementById('budgetSpent').textContent='Rs '+total.toLocaleString();
+ let rem=Math.max((budget||0)-total,0);
+ document.getElementById('budgetRemaining').textContent='Rs '+rem.toLocaleString();
+ document.getElementById('budgetBar').style.width=(budget?Math.min(total/budget*100,100):0)+'%';
+
+ document.getElementById('prayerHeading').textContent=(prayer.city?prayer.city+' — ':'')+'آج کے نماز کے اوقات';
+ const p=[['فجر',prayer.fajr],['ظہر',prayer.dhuhr],['عصر',prayer.asr],['مغرب',prayer.maghrib],['عشاء',prayer.isha]];
+ document.getElementById('prayerList').innerHTML=p.map(x=>`<div class="expense"><span>${x[0]}</span><b>${x[1]||'—'}</b></div>`).join('');
+ document.getElementById('prayerCity').value=prayer.city||'';['fajr','dhuhr','asr','maghrib','isha'].forEach(k=>document.getElementById(k).value=prayer[k]||'');
+
+ document.getElementById('accountStatus').innerHTML=account.name?`اکاؤنٹ: <b>${esc(account.name)}</b> — PIN محفوظ ہے۔`:'ابھی کوئی مقامی اکاؤنٹ محفوظ نہیں۔';
+}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function tick(){
+ let d=new Date();
+ document.getElementById('today').textContent=d.toLocaleDateString('ur-PK',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+ document.getElementById('clock').textContent=d.toLocaleTimeString('en-PK');
+}
+tick();setInterval(tick,1000);render();
+document.getElementById('scheduleDate').value=new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>
